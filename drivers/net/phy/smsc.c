@@ -63,9 +63,9 @@ static struct phy_driver lan8710_driver = {
 	.name = "SMSC LAN8710/LAN8720",
 	.uid = 0x0007c0f0,
 	.mask = 0xffff0,
-	.features = PHY_BASIC_FEATURES,
+	.features = PHY_GBIT_FEATURES,
 	.config = &genphy_config_aneg,
-	.startup = &genphy_startup,
+	.startup = &smsc_startup,
 	.shutdown = &genphy_shutdown,
 };
 
