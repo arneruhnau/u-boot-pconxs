@@ -84,10 +84,14 @@
 #undef CONFIG_CMD_IMLS
 
 #define CONFIG_BOOTDELAY -1
-#define CONFIG_ETHPRIME "FEC0"
 
 
 /* Ethernet */
+#undef CONFIG_FEC_MXC
+#undef CONFIG_CMD_NET
+#undef CONFIG_CMD_NFS
+/*
+#define CONFIG_ETHPRIME "FEC0"
 #define CONFIG_FEC_MXC
 #define CONFIG_FEC_MXC_PHYADDR 1
 #define IMX_FEC_BASE ENET_BASE_ADDR
@@ -109,6 +113,7 @@
 #define CONFIG_BOOTP_SUBNETMASK
 #define CONFIG_BOOTP_GATEWAY
 #define CONFIG_BOOTP_DNS
+*/
 /* /Ethernet */
 
 #define CONFIG_MXC_OCOTP
