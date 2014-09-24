@@ -185,7 +185,7 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"autoload=0\0" \
 	"script=boot.scr\0" \
-	"uimage=uImage\0" \
+	"image=zImage\0" \
 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
 	"fdt_addr=0x18000000\0" \
 	"boot_fdt=try\0" \
@@ -199,33 +199,34 @@
 	"mmcargs=setenv bootargs "\
 		"consoleblank=0 "\
 		"console=${console},${baudrate} " \
+		"fbcon=map:1 "\
 		"root=${mmcroot}\0" \
 	"loadbootscript=" \
 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
-	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if run loadfdt; then " \
-				"bootm ${loadaddr} - ${fdt_addr}; " \
+				"bootz ${loadaddr} - ${fdt_addr}; " \
 			"else " \
 				"if test ${boot_fdt} = try; then " \
-					"bootm; " \
+					"bootz; " \
 				"else " \
 					"echo WARN: Cannot load the DT; " \
 				"fi; " \
 			"fi; " \
 		"else " \
-			"bootm; " \
+			"bootz; " \
 		"fi;\0"
 
 #define CONFIG_BOOTCOMMAND \
 	"mmc dev ${mmcdev};" \
 	"if mmc rescan; then " \
-		"if run loaduimage; then " \
+		"if run loadimage; then " \
 			"run mmcboot; " \
 		"fi; " \
 	"fi"
