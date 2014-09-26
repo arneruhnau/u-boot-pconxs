@@ -57,6 +57,7 @@ static void setup_iomux_mlb(void);
 static void setup_iomux_pwm(void);
 static void setup_iomux_weim(void);
 static void keep_power_supply_alive(void);
+static void turn_off_leds(void);
 
 
 #ifdef CONFIG_VIDEO_IPUV3
@@ -228,6 +229,7 @@ int board_early_init_f(void)
 	setup_iomux_i2c(I2C2_BASE_ADDR);
 #endif
 	keep_power_supply_alive();
+	turn_off_leds();
 	usbotg_init();
 	display_init();
 	return 0;
@@ -237,6 +239,22 @@ static void keep_power_supply_alive(void)
 {
 	#define TARGET_POWER_SUPPLY_PIN IMX_GPIO_NR(4, 15)
 	gpio_direction_output(TARGET_POWER_SUPPLY_PIN, 1);
+}
+
+static void turn_off_leds(void)
+{
+	#define TARGET_LED_RIGHT_R IMX_GPIO_NR(5, 2)
+	#define TARGET_LED_RIGHT_G IMX_GPIO_NR(5, 4)
+	#define TARGET_LED_RIGHT_B IMX_GPIO_NR(6, 6)
+	#define TARGET_LED_LEFT_R IMX_GPIO_NR(2, 16)
+	#define TARGET_LED_LEFT_G IMX_GPIO_NR(2, 17)
+	#define TARGET_LED_LEFT_B IMX_GPIO_NR(2, 18)
+	gpio_direction_output(TARGET_LED_RIGHT_R, 0);
+	gpio_direction_output(TARGET_LED_RIGHT_G, 0);
+	gpio_direction_output(TARGET_LED_RIGHT_B, 0);
+	gpio_direction_output(TARGET_LED_LEFT_R, 0);
+	gpio_direction_output(TARGET_LED_LEFT_G, 0);
+	gpio_direction_output(TARGET_LED_LEFT_B, 0);
 }
 
 static void usbotg_init(void) {
