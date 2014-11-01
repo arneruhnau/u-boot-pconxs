@@ -32,10 +32,44 @@ static int smsc_parse_status(struct phy_device *phydev)
 	return 0;
 }
 
+static int lan8820_parse_status(struct phy_device *phydev)
+{
+	int esr_mii_reg;
+	int mii_reg;
+
+	mii_reg = phy_read(phydev, MDIO_DEVAD_NONE, MII_BMSR);
+	esr_mii_reg = phy_read(phydev, MDIO_DEVAD_NONE, MII_ESTATUS);
+
+	if (esr_mii_reg & (ESTATUS_1000XFULL | ESTATUS_1000XHALF))
+		phydev->speed = SPEED_1000;
+	else if (esr_mii_reg & (ESTATUS_1000TFULL | ESTATUS_1000THALF))
+		phydev->speed = SPEED_1000;
+	else if (mii_reg & (BMSR_100FULL | BMSR_100HALF))
+		phydev->speed = SPEED_100;
+	else
+		phydev->speed = SPEED_10;
+
+	if (esr_mii_reg & (ESTATUS_1000X_FULL | ESTATUS_1000TFULL))
+		phydev->duplex = DUPLEX_FULL;
+	else if (mii_reg & (BMSR_10FULL | BMSR_100FULL))
+		phydev->duplex = DUPLEX_FULL;
+	else
+		phydev->duplex = DUPLEX_HALF;
+
+	return 0;
+}
+
 static int smsc_startup(struct phy_device *phydev)
 {
 	genphy_update_link(phydev);
 	smsc_parse_status(phydev);
+	return 0;
+}
+
+static int lan8820_startup(struct phy_device *phydev)
+{
+	genphy_update_link(phydev);
+	lan8820_parse_status(phydev);
 	return 0;
 }
 
@@ -69,11 +103,22 @@ static struct phy_driver lan8710_driver = {
 	.shutdown = &genphy_shutdown,
 };
 
+static struct phy_driver lan8820_driver = {
+	.name = "SMSC LAN8820",
+	.uid = 0x0007c0e0,
+	.mask = 0xffff0,
+	.features = PHY_GBIT_FEATURES,
+	.config = &genphy_config_aneg,
+	.startup = &lan8820_startup,
+	.shutdown = &genphy_shutdown,
+};
+
 int phy_smsc_init(void)
 {
 	phy_register(&lan8710_driver);
 	phy_register(&lan911x_driver);
 	phy_register(&lan8700_driver);
+	phy_register(&lan8820_driver);
 
 	return 0;
 }
